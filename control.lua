@@ -32,37 +32,20 @@ script.on_init(OnInit)
 script.on_load(OnLoad)
 
 function fillGridRoboportWagon1(entity)
-    -- If the ElectricTrains mod is installed, the generator is not needed. 
-    -- The power supply of the car comes from the same network as the locomotive
-    -- if HasElectricTrainInstalled() then
-        -- entity.grid.put({name="personal-roboport-mk2-equipment", position={0,0}})
-    -- else
     entity.grid.put({name="rw-wagon-generator-1", position={0,0}})
-    -- end
-
     entity.grid.put({name="personal-roboport-equipment", position={2,0}})
     entity.grid.put({name="personal-roboport-equipment", position={4,0}})
 end
 
 function fillGridRoboportWagon2(entity)
-    -- if HasElectricTrainInstalled() then
-        -- entity.grid.put({name="personal-roboport-mk2-equipment", position={0,0}})
-    -- else
-        entity.grid.put({name="rw-wagon-generator-2", position={0,0}})
-    -- end
-
+    entity.grid.put({name="rw-wagon-generator-2", position={0,0}})
     entity.grid.put({name="personal-roboport-mk2-equipment", position={0,2}})
     entity.grid.put({name="personal-roboport-mk2-equipment", position={2,0}})
     entity.grid.put({name="personal-roboport-mk2-equipment", position={2,2}})
 end
 
 function fillGridRoboportWagon3(entity)
-    -- if HasElectricTrainInstalled() then
-        -- entity.grid.put({name="personal-roboport-mk2-equipment", position={0,0}})
-    -- else
     entity.grid.put({name="rw-wagon-generator-3", position={0,0}})
-    -- end
-    
     entity.grid.put({name="personal-roboport-mk2-equipment", position={0,2}})
     entity.grid.put({name="personal-roboport-mk2-equipment", position={0,4}})
     entity.grid.put({name="personal-roboport-mk2-equipment", position={2,0}})
@@ -98,10 +81,14 @@ function OnBuildEntity(event)
     local fillFunction = roboport_grid_fill_function[entity.name]
     if fillFunction then
         fillFunction(entity)
-        -- CreateProvider(entity)
+
+        --[[
+            The car cannot use the generator - engine limitation
+            A custom boiler with a "special" fuel created by this plugin is used as a generator
+        ]]
 
         entity.grid.get({0,0}).burner.inventory.insert({
-            name = "rw-electric-wagon-fuel",
+            name = "rw-electric-wagon-fuel", -- fuel, creation in item.lua
             count = 1
         })
 
