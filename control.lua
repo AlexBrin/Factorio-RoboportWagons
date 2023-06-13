@@ -202,7 +202,7 @@ end
 script.on_nth_tick(1, OnTick)
 
 function addWagon(wagon)
-    table.insert(global.WaginList, {entity=wagon, provider=nil})
+    table.insert(global.WagonList, {entity=wagon, provider=nil})
     WagCount = WagCount + 1
 end
 
