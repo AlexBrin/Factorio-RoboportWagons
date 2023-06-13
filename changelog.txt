@@ -1,0 +1,13 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: 13.06.2023
+  Bugfixes:
+    - Fixed an error of sudden loss of energy in roboport wagons.
+    - Fixed a possible crash when installing the wagon.
+  Changes:
+    - Minor improvement in code quality.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 29.05.2023
+  Changes:
+    - Initial release.
