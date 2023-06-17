@@ -133,17 +133,20 @@ local function onTickElectricWagon(event)
         else
             if not wag.entity or not wag.entity.valid then
                 removeWagon(x)
-            else
-                local burner = wag.entity.grid.get({0,0}).burner
-                if burner and burner.valid and burner.currently_burning and burner.currently_burning.valid then
-                    needPower = burner.currently_burning.fuel_value - burner.remaining_burning_fuel
-                    restPower = wag.provider.energy - needPower
-                    if restPower > 0 then
-                        burner.remaining_burning_fuel = burner.currently_burning.fuel_value
-                        wag.provider.energy = wag.provider.energy - needPower
-                    else
-                        burner.remaining_burning_fuel = burner.remaining_burning_fuel + wag.provider.energy
-                        wag.provider.energy = 0
+            elseif wag.entity and wag.entity.valid and wag.entity.grid and wag.entity.grid.valid then
+                local gridEquipment = wag.entity.grid.get({0,0})
+                if gridEquipment and gridEquipment.valid then
+                    local burner = gridEquipment.burner
+                    if burner and burner.valid and burner.currently_burning and burner.currently_burning.valid then
+                        needPower = burner.currently_burning.fuel_value - burner.remaining_burning_fuel
+                        restPower = wag.provider.energy - needPower
+                        if restPower > 0 then
+                            burner.remaining_burning_fuel = burner.currently_burning.fuel_value
+                            wag.provider.energy = wag.provider.energy - needPower
+                        else
+                            burner.remaining_burning_fuel = burner.remaining_burning_fuel + wag.provider.energy
+                            wag.provider.energy = 0
+                        end
                     end
                 end
             end

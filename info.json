@@ -1,7 +1,7 @@
 {
 	"name":"RoboportWagons",
 	"author":"AlexBrin",
-	"version":"1.0.2",
+	"version":"1.0.3",
 	"title":"Roboport Wagons",
 	"description":"Adds electric wagon with roboport and logistic wagon. With ElectricTrain and SpaceExploration support",
 	"factorio_version":"1.1",
