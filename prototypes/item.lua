@@ -81,6 +81,6 @@ data:extend({
 		flags = { "hidden" },
 		fuel_value = "20MJ",
 		fuel_category = "chemical",
-		stack_size = 1
+		stack_size = 5
 	}
 })

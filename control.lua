@@ -10,7 +10,9 @@ function Init()
 end
 
 function ReInit()
-    Init()
+    global.WagonList = global.WagonList or {}
+    global.WagControlList = global.WagControlList or {}
+    
     Load()
 end
 
@@ -62,6 +64,13 @@ local roboport_grid_fill_function = {
     ["roboport-wagon-3"] = fillGridRoboportWagon3,
 }
 
+local function setFuel(wagon)
+    wagon.grid.get({0,0}).burner.inventory.insert({
+        name = "rw-electric-wagon-fuel", -- fuel, creation in item.lua
+        count = 5
+    })
+end
+
 function CreateProvider(wag)
     local control = global.WagControlList[1]
     local pos = control.position
@@ -83,16 +92,11 @@ function OnBuildEntity(event)
         fillFunction(entity)
 
         --[[
-            The car cannot use the generator - game engine limitation
+            The wagon cannot use the generator - game engine limitation
             A custom boiler with a "special" fuel created by this plugin is used as a generator
         ]]
 
-        entity.grid.get({0,0}).burner.inventory.insert({
-            name = "rw-electric-wagon-fuel", -- fuel, creation in item.lua
-            count = 1
-        })
-
-
+        setFuel(entity)
         addWagon(entity)
     end
 end
@@ -123,21 +127,15 @@ script.on_event({defines.events.on_built_entity, defines.events.on_robot_built_e
 script.on_event({defines.events.on_pre_player_mined_item, defines.events.on_robot_pre_mined, defines.events.on_entity_died, defines.events.script_raised_destroy}, OnRemoveEntity)
 
 local function onTickElectricWagon(event)
-    for x, wag in ipairs(global.WagonList) do
+    for id, wag in pairs(global.WagonList) do
         if not (wag.provider and wag.provider.valid) then
-            if not wag.entity or not wag.entity.valid then
-                removeWagon(x)
-            else
-                CreateProvider(wag)
-            end
-        else
-            if not wag.entity or not wag.entity.valid then
-                removeWagon(x)
-            elseif wag.entity and wag.entity.valid and wag.entity.grid and wag.entity.grid.valid then
-                local gridEquipment = wag.entity.grid.get({0,0})
-                if gridEquipment and gridEquipment.valid then
-                    local burner = gridEquipment.burner
-                    if burner and burner.valid and burner.currently_burning and burner.currently_burning.valid then
+            CreateProvider(wag)
+        elseif wag.entity and wag.entity.valid then
+            local gridEquipment = wag.entity.grid.get({0,0})
+            if gridEquipment and gridEquipment.valid then
+                local burner = gridEquipment.burner
+                if burner and burner.valid then
+                    if burner.currently_burning and burner.currently_burning.valid then
                         needPower = burner.currently_burning.fuel_value - burner.remaining_burning_fuel
                         restPower = wag.provider.energy - needPower
                         if restPower > 0 then
@@ -147,15 +145,23 @@ local function onTickElectricWagon(event)
                             burner.remaining_burning_fuel = burner.remaining_burning_fuel + wag.provider.energy
                             wag.provider.energy = 0
                         end
+
+                        if burner.remaining_burning_fuel < 1 then
+                            setFuel(wag.entity)
+                        end
+                    else 
+                        setFuel(wag.entity.unit_number)
                     end
                 end
             end
+        else 
+            removeWagon(id)
         end
     end
 end
 
 local function onTickBurnerWagon(event)
-    for x, entity in ipairs(global.WagonList) do
+    for x, entity in pairs(global.WagonList) do
         if entity.valid then
             burner_inventory = entity.grid.get({0, 0}).burner.inventory
             wagon_inventory = entity.get_inventory(defines.inventory.cargo_wagon)
@@ -166,7 +172,7 @@ local function onTickBurnerWagon(event)
                 end
             end
         else
-            removeWagon(x)
+            removeWagon(entity.unit_number)
         end
     end
 end
@@ -205,11 +211,17 @@ end
 script.on_nth_tick(1, OnTick)
 
 function addWagon(wagon)
-    table.insert(global.WagonList, {entity=wagon, provider=nil})
+    global.WagonList[wagon.unit_number] = {entity=wagon, provider=nil}
     WagCount = WagCount + 1
 end
 
-function removeWagon(idx)
-    table.remove(global.WagonList, idx)
-    WagCount = WagCount - 1
+function removeWagon(id)
+    if global.WagonList[id] then
+        if global.WagonList[id].provider and global.WagonList[id].provider.valid then
+            global.WagonList[id].provider.destroy()
+        end
+
+        table.remove(global.WagonList, id)
+        WagCount = WagCount - 1
+    end
 end
