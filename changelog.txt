@@ -2,7 +2,7 @@
 Version: 1.0.4
 Date: 19.06.2023
   Bugfixes:
-    - Fixed sudden loss of fuel when using ElectricTrains
+    - Fixed sudden loss of fuel when using ElectricTrains mod
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.3
 Date: 17.06.2023
