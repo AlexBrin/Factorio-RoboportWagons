@@ -129,7 +129,9 @@ script.on_event({defines.events.on_pre_player_mined_item, defines.events.on_robo
 local function onTickElectricWagon(event)
     for id, wag in pairs(global.WagonList) do
         if not (wag.provider and wag.provider.valid) then
-            CreateProvider(wag)
+            if wag.entity and wag.entity.valid then
+                CreateProvider(wag)
+            end
         elseif wag.entity and wag.entity.valid then
             local gridEquipment = wag.entity.grid.get({0,0})
             if gridEquipment and gridEquipment.valid then
