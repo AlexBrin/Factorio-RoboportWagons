@@ -151,8 +151,6 @@ local function onTickElectricWagon(event)
                         if burner.remaining_burning_fuel < 1 then
                             setFuel(wag.entity)
                         end
-                    else 
-                        setFuel(wag.entity.unit_number)
                     end
                 end
             end
